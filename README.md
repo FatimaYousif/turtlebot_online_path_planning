@@ -24,7 +24,7 @@ roslaunch turtlebot_online_path_planning gazebo.launch
 rosrun turtlebot_online_path_planning turtlebot_online_path_planning_node.py
 ```
 
-## Special (Extra) functionality:
+## Special (Extra) Functionality:
 
 The following are the added generic functions besides the RRT or Planner class´s auxiliary functions.
 
