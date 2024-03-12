@@ -52,10 +52,10 @@ The recover method in the OnlinePlanner class handles recovery behavior when the
 
 Used in: __plan__ function
 
-#### RViz Visualization of robot:
+## Video - RViz Visualization of robot:
 
 ![Video of the robot planning the path](./docs/img/costmap_exploration.png)
 
+## Images - RViz Visualization of robot:
 
-
-
+<img src="/images/RViz.png" alt="RViz Image" width="400"/>  <img src="/images/gazebo.png" alt="Gazebo Image" width="400"/> 
