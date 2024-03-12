@@ -57,3 +57,5 @@ Used in: __plan__ function
 ![Video of the robot planning the path](./docs/img/costmap_exploration.png)
 
 
+
+
