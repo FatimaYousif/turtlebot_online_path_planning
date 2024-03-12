@@ -266,6 +266,7 @@ def move_to_point(current, goal, Kv=0.5, Kw=0.5):
     psi_d = math.atan2(goal[1] - current[1], goal[0] - current[0])
     w = Kw * wrap_angle(psi_d - current[2])
     v = Kv* d
+    # receiving a goal with curve -> stop the robot (zero linear velocity) and move  
     if wrap_angle(psi_d - current[2]) > 0.03:
         v = 0
     return v, w
