@@ -5,8 +5,8 @@ import math
 def wrap_angle(angle):
     return (angle + ( 2.0 * np.pi * np.floor( ( np.pi - angle ) / ( 2.0 * np.pi ) ) ) )
 
-# WORLD COORDINATES <<<<<<<<<<<< IMP
-# MAP = in SEM 1 - or - when u want to check if thereś an obstacle next
+# everything about robot is in WORLD COORDINATES 
+# MAP = was in SEM 1 - or - you convert it to one when you want to check if there´s an obstacle next.
 
 class StateValidityChecker:
     """ Checks if a position or a path is valid given an occupancy map."""
@@ -33,9 +33,7 @@ class StateValidityChecker:
         self.origin = np.array(origin)
         self.there_is_map = True
     
-    # Given a pose, returs true if the pose is not in collision and false othewise.
-    # checking_path=False ++++++++++++++++++++++++++++++++++++++++++++++++++
-    
+    # Given a pose, returs true if the pose is not in collision and false othewise.  
     def is_valid(self, pose, checking_path=False):
              
 
