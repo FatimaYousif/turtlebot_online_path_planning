@@ -46,6 +46,10 @@ The recover method in the OnlinePlanner class handles recovery behavior when the
 
 These methods are crucial for ensuring safe navigation of the robot within its environment, detecting obstacles, and handling situations where the robot gets stuck. They form part of a larger set of functionalities for online path planning and robot control.
 
+### __is_robot_in_obstacle__(self)
+
+This method checks if the robot is stuck in an obstacle by utilizing the is_valid method from the StateValidityChecker (svc) object. It extracts the current position of the robot (current_pose) and checks if it's within an obstacle (i.e., not a valid position). If the current position is not valid, indicating it's stuck in an obstacle, the function returns True; otherwise, it returns False.
+
 #### RViz Visualization of robot:
 
 ![Video of the robot planning the path](./docs/img/costmap_exploration.png)
