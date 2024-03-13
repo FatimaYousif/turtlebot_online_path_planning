@@ -51,7 +51,7 @@ class OnlinePlanner:
         self.recovery_time = rospy.Duration(5)
         self.recovery_vel = -0.1
 
-        #--------------------ROS NODE-------------------------
+        #--------------------ROS NODE-----------------------
         # PUBLISHERS
         # Publisher for sending velocity commands to the robot
         self.cmd_pub = rospy.Publisher(cmd_vel_topic, Twist, queue_size=1) # TODO: publisher to cmd_vel_topic
@@ -77,7 +77,7 @@ class OnlinePlanner:
 
         # TODO: Store current position (x, y, yaw) as a np.array in self.current_pose var.
         self.current_pose =  np.array([odom.pose.pose.position.x, odom.pose.pose.position.y, yaw]) 
-        # ----- WE CAN ADD VELOCITY too = FOR CLOSED LOOP -----------
+        # ----- WE CAN ADD VELOCITY = FOR CLOSED LOOP
     
     # Goal callback: Get new goal from /move_base_simple/goal topic published by rviz 
     # and computes a plan to it using self.plan() method
@@ -114,12 +114,13 @@ class OnlinePlanner:
                 total_path = [self.current_pose[0:2]] + self.path
 
                 # TODO: check total_path validity. If total_path is not valid replan
+                
                 if not self.svc.check_path(total_path):
-                    rospy.logerr("Error: Current path is invalid. Replanning...")
+                    rospy.logerr("Current path is not valid -- plan a new path")
                     self.path = []
                     self.plan()
                 else:
-                    rospy.logwarn("Warning: Current path is still valid. Continuing on the same path.")
+                    rospy.logwarn("Current path is valid -- stay on same path")
 
 
     # Solve plan from current position to self.goal. 
@@ -130,14 +131,13 @@ class OnlinePlanner:
         # Check if robot stuck in the obstacle 
         while self.is_robot_in_obstacle():
             self.recover()
-            self.path = compute_path(start_p= self.current_pose[0:2],goal_p=self.goal[0:2],
-                                 state_validity_checker=self.svc, bounds= self.bounds,max_time=self.max_planning_time) 
+        
         # TODO: plan a path from self.current_pose to self.goal
         self.path = compute_path(start_p= self.current_pose[0:2],goal_p=self.goal[0:2],
                                  state_validity_checker=self.svc, bounds= self.bounds,max_time=self.max_planning_time)
         
         # TODO: If planning fails, consider increasing the planning time, retry the planning a few times, etc.
-        if len(self.path) == 0:
+        if self.path == []:
             for i in range(self.max_retries):
                 self.path = compute_path(start_p= self.current_pose[0:2],goal_p=self.goal[0:2],
                                     state_validity_checker=self.svc, bounds= self.bounds, max_time=self.max_planning_time+ self.reserved_time) 
@@ -168,7 +168,7 @@ class OnlinePlanner:
 
                 del self.path[0]
 
-                # If it was the last waypoint in the path show a message indicating it 
+                # If it was the last waypoint in the path show a message indicating it   
                 if len(self.path) == 0:
                     self.goal = None
                     print("Final position reached!")
@@ -183,9 +183,9 @@ class OnlinePlanner:
 
     def recover(self):
         """
-        Recovery behavior with backward motion
+        Recovery behavior by just moving the robot backward
         """
-        rospy.logwarn("Warning: Robot is currently stuck in an obstacle and attempting recovery.")
+        rospy.logwarn("Robot is stuck in an obstacle! Recovering...")
         cmd = Twist()
         start_time = rospy.Time.now()
         while (rospy.Time.now() -start_time ) < self.recovery_time:
@@ -198,13 +198,14 @@ class OnlinePlanner:
             cmd.angular.y = 0
             cmd.angular.z = np.clip(w, -self.w_max, self.w_max)
             self.cmd_pub.publish(cmd)
-        rospy.loginfo("Recovery completed.")
+        rospy.loginfo("Finished recovering!")
         cmd.linear.x = 0
         cmd.linear.y = 0
         self.cmd_pub.publish(cmd)
 
 
     def is_robot_in_obstacle(self):
+        print(self.current_pose[0:2])
         return not self.svc.is_valid(self.current_pose[0:2])
 
     # PUBLISHER HELPERS = IMPORTANT TO UNDERSTAND 
