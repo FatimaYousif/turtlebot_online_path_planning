@@ -63,3 +63,6 @@ Used in: __plan__ function
 
 #### Gazebo
 <img src="/images/gazebo.png" alt="Gazebo Image" width="400"/> 
+
+#### Obstacle avoidance case: Terminal logs, RViz output
+<img src="/images/obstacle.jpeg" alt="Gazebo Image" width="400"/> 
