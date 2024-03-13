@@ -53,7 +53,7 @@ The recover method in the OnlinePlanner class handles recovery behavior when the
 Used in: __plan__ function
 
 ## Problems enocuntered:
---------------------
+
 
 ## Video - Visualization:
 
