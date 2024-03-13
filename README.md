@@ -1,6 +1,6 @@
 # Turtlebot Online Path Planning
 
-In this Hands-on Planning (HOP) lab attached with its package deliverable, the first online path planning pipeline for Turtlebot3 was further developed. Having included the following classes as StateValidityChecker, Planner (RRT with smoothing) , and compute_path(), and move_to_point() functions alongside the OnlinePlanner class for online path planning and controlling a robot using ROS with Key functionalities including: Subscribing to various topics, implementing methods, providing velocity controller, implementing robot recovery (from obstacle avoidance) behaviour case to publishing markers for visualization in RViz. 
+In this Hands-on Planning lab attached with its package deliverable and repository [here](https://github.com/FatimaYousif/HOP_Lab_1) (which will be maintained for future work also), the first online path planning pipeline for Turtlebot3 was further developed. Having included the following classes as StateValidityChecker, Planner (RRT with smoothing) , and compute_path(), and move_to_point() functions alongside the OnlinePlanner class for online path planning and controlling a robot using ROS with Key functionalities including: Subscribing to various topics, implementing methods, providing velocity controller, implementing robot recovery (from obstacle avoidance) behaviour case to publishing markers for visualization in RViz. 
 <br><br>
 
 ## Lab contributors & student ID:
@@ -58,4 +58,8 @@ Used in: __plan__ function
 
 ## Images - Visualization:
 
-<img src="/images/RViz.png" alt="RViz Image" width="400"/>  <img src="/images/gazebo.png" alt="Gazebo Image" width="400"/> 
+#### RViz
+<img src="/images/RViz.png" alt="RViz Image" width="400"/>  
+
+#### Gazebo
+<img src="/images/gazebo.png" alt="Gazebo Image" width="400"/> 
