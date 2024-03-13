@@ -52,12 +52,9 @@ The recover method in the OnlinePlanner class handles recovery behavior when the
 
 Used in: __plan__ function
 
-## Problems enocuntered:
-
-
 ## Video - Visualization:
 
-[![Video of the robot planning the path](https://img.youtube.com/vi/suB0sYJcoR4/maxresdefault.jpg)](https://youtu.be/suB0sYJcoR4?si=Ojj5EWFjQS6JZkkG "Watch the video on YouTube")
+[![Video of the robot planning the path](https://img.youtube.com/vi/suB0sYJcoR4/maxresdefault.jpg)](https://youtu.be/gElyY12p7Go "Watch the video on YouTube")
 
 ## Images - Visualization:
 
