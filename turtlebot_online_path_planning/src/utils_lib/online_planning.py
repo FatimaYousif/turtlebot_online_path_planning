@@ -5,14 +5,14 @@ import math
 def wrap_angle(angle):
     return (angle + ( 2.0 * np.pi * np.floor( ( np.pi - angle ) / ( 2.0 * np.pi ) ) ) )
 
-# everything about robot is in WORLD COORDINATES 
-# MAP = was in SEM 1 - or - you convert it to one when you want to check if there´s an obstacle next.
+# everything from on wards in WORLD COORDINATES 
+# MAP = previously in SEM 1 - or - in this lab when u want to check if there´s an obstacle next
 
 class StateValidityChecker:
     """ Checks if a position or a path is valid given an occupancy map."""
 
     # Constructor
-    def __init__(self, distance=0.3, is_unknown_valid=True):
+    def __init__(self, distance=0.1, is_unknown_valid=True):
         # map: 2D array of integers which categorizes world occupancy
         self.map = None 
         # map sampling resolution (size of a cell))                            
@@ -33,7 +33,7 @@ class StateValidityChecker:
         self.origin = np.array(origin)
         self.there_is_map = True
     
-    # Given a pose, returs true if the pose is not in collision and false othewise.  
+    # Given a pose, returs true if the pose is not in collision and false othewise.
     def is_valid(self, pose, checking_path=False):
              
 
@@ -45,10 +45,8 @@ class StateValidityChecker:
         # 1.
              grid_pose = self.__position_to_map__(pose)
 
-             if self.__in_map__ == False:
-                return False
              
-             if grid_pose != []:
+             if len(grid_pose) != 0:
 
                 grid_pose = (int(round(grid_pose[0],0)),int(round(grid_pose[1],0)))
                 map_value = self.map[grid_pose]
@@ -56,19 +54,16 @@ class StateValidityChecker:
                 # 2. Return True if free, False if occupied and self.is_unknown_valid if unknown.
                 if map_value == 0:   # If free space, check vicinity as well
                     return self.__check_vicinity__(grid_pose, self.distance,checking_path)
-                    # return True
                 elif map_value == -1 and self.is_unknown_valid == True:
-                    return self.__check_vicinity__(grid_pose, self.distance,checking_path)
-                    # return True
+                    return True
                 else: # if obstacle, or if its unknown and is_unknown_valid = False, return False
                     return False
              else:
-                return False
+                return self.is_unknown_valid
 
 
-    # Given a path, returs true if the path is not in collision and false othewise.
-          
-    def check_path(self, path, step_size=0.04):
+    # Given a path, returs true if the path is not in collision and false othewise.              
+    def check_path(self, path, step_size=0.02):
 
         # 1. TODO: Discretize the positions between 2 waypoints with an step_size = 2*self.distance
         # 2. TODO: for each point check if `is_valid``. If only one element is not valid return False, otherwise True.
@@ -78,19 +73,18 @@ class StateValidityChecker:
         # 1. 
         for i in range(len(path)-1):
             p1, p2 = path[i], path[i+1]
-            
             dist = math.sqrt((p2[0]-p1[0])**2 + (p2[1]-p1[1])**2)
-            
             num_steps = dist / step_size
             num_steps= int(num_steps)
             
             for j in range(num_steps):
-                interpolation = float(j) / num_steps  #the interpolation value for each step to find the pt we are checking right now
+                interpolation = float(j) / num_steps  # more discritization = on the pt we´re = for accuracy 
                 x = p1[0] * (1-interpolation) + p2[0] * interpolation
                 y = p1[1] * (1-interpolation) + p2[1] * interpolation
                 waypoints.append((x,y))
 
         # 2. 
+        # In case the robot lands on obstacle space while picking the can, allow some margin since now it is no longer obstacle space
         for w in waypoints:
             if self.is_valid(w,checking_path=True) == False:
                 return False
@@ -137,12 +131,13 @@ class RRT:
         self.K = max_iterations
         self.delta_q = delta_q
         self.prob = p_goal
+        self.parent = {}
+        self.svc = state_validity_checker
+
         self.min_x = dominion[0]
         self.max_x = dominion[1]
         self.min_y = dominion[2]
         self.max_y = dominion[3]
-        self.parent = {}
-        self.svc = state_validity_checker
     
     def compute_path(self, q_start, q_goal):
         # Implement RRT algorithm.
@@ -152,9 +147,6 @@ class RRT:
         for k in range(self.K):
             qrand = self.create_random_point(self.prob, self.min_x, self.max_x, self.min_y, self.max_y, q_goal)
             qnear = self.find_nearest_node(qrand, G)
-
-            while self.svc.is_valid(qnear) is False:
-                 qnear = self.find_nearest_node(qrand, G)
 
             qnew = self.determine_new_node(qnear, qrand, self.delta_q)
             
@@ -175,7 +167,7 @@ class RRT:
 
         start = path[start_counter]
         goal = path[goal_counter]
-        smooth_path = [goal]    # smoothing GOAL TO START
+        smooth_path = [goal]
         while goal[0] != start[0] or goal[1] != start[1]:
             if self.svc.check_path([start,goal], step_size=0.04):
                 smooth_path.insert(0, start)
@@ -188,24 +180,20 @@ class RRT:
         return smooth_path
     
     # If you need any auxiliar method include it in this class
-
-    # QRAND 
     def create_random_point(self, probability, xmin, xmax, ymin, ymax, goal_point):
         if random.random() > probability:
-            random_point = random.randint(xmin, xmax), random.randint(ymin, ymax)
+            random_point = [random.uniform(xmin, xmax), random.uniform(ymin, ymax)]
         else: 
             random_point = goal_point
         return random_point
     
     # Function to find the nearest node in the graph to a given point
-    # QNEAR
     def find_nearest_node(self, random_point, graph):
         distances = [math.sqrt((random_point[0]-vertex[0])**2 + (random_point[1]-vertex[1])**2) for vertex in graph]
         min_index = distances.index(min(distances))
         return graph[min_index]
     
     # Function to determine a new node's position considering the step size
-    # QNEW
     def determine_new_node(self, closest_node, random_point, step_size):
         distance = math.sqrt((random_point[0]-closest_node[0])**2 + (random_point[1]-closest_node[1])**2)
         if distance < step_size:
@@ -257,16 +245,14 @@ def compute_path(start_p, goal_p, state_validity_checker, bounds, max_time=1.0):
 # lineal velocity and angular velocity to be applied in order to reah the goal. = DD robot
 def move_to_point(current, goal, Kv=0.5, Kw=0.5):
     
-    # TODO: Use a proportional controller which sets a velocity command to move from current position to goal (u = Ke)
-    # To avoid strange curves, first correct the orientation and then the distance. 
-    # Hint: use wrap_angle function to maintain yaw in [-pi, pi]
-    # This function should return only  linear velocity (v) and angular velocity (w)
+    # # TODO: Use a proportional controller which sets a velocity command to move from current position to goal (u = Ke)
+    # # To avoid strange curves, first correct the orientation and then the distance. 
+    # # Hint: use wrap_angle function to maintain yaw in [-pi, pi]
+    # # This function should return only  linear velocity (v) and angular velocity (w)
 
-    d = math.sqrt((goal[0] - current[0])**2 + (goal[1] - current[1])**2)
-    psi_d = math.atan2(goal[1] - current[1], goal[0] - current[0])
-    w = Kw * wrap_angle(psi_d - current[2])
-    v = Kv* d
-    # receiving a goal with curve -> stop the robot (zero linear velocity) and move  
-    if wrap_angle(psi_d - current[2]) > 0.03:
-        v = 0
-    return v, w
+    psi_d = np.arctan2(goal[1] - current[1], goal[0] - current[0])  
+    w_d = Kw * wrap_angle(psi_d - current[2])
+    v_d = 0
+    if abs(w_d) < 0.05: 
+        v_d = Kv * np.linalg.norm(goal - current[0:2])
+    return v_d, w_d
