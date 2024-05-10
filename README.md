@@ -4,11 +4,20 @@ In this Hands-on Planning lab attached with its package deliverable and reposito
 <br><br>
 
 ## Lab contributors & student ID:
-
-| Name                    | ID       |
-| -------------------     | -------- |
-| Fatima Yousif Rustamani | u1992375 |
-| Lisa Paul Magoti        | u1992463 |
+<table>
+  <tr>
+    <th>Name</th>
+    <th>ID</th>
+  </tr>
+  <tr style="background-color: transparent;">
+    <td>Fatima Yousif Rustamani</td>
+    <td>u1992375</td>
+  </tr>
+  <tr style="background-color: transparent;">
+    <td>Lisa Paul Magoti</td>
+    <td>u1992463</td>
+  </tr>
+</table>
 
 ## HOW TO RUN:
 
